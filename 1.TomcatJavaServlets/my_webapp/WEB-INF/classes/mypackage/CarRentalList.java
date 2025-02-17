@@ -31,7 +31,8 @@ public class CarRentalList extends HttpServlet {
       llegirIImprimirRentals(out);
       out.println("</body></html>");
     } else {
-      out.println("<html>Usuari o contrasenya incorrectes.</html>");
+      out.println("<a href='carrental_form_list.html'>List rentals</a><br><br>");
+      out.println("<html><span style='color: red;'>Usuari o contrasenya incorrectes.</span></html>");
     }
   }
 
@@ -43,11 +44,11 @@ public class CarRentalList extends HttpServlet {
   // Funció per llegir els rentals i imprimir-los
   private void llegirIImprimirRentals(PrintWriter out) {
     // Ruta del fitxer JSON on es registren els rentals
-    String filePath = "/home/alumne/Documents/PTI/lab/ptiBASE/servlets/apache-tomcat-10.0.10/webapps/my_webapp/rentals.json";
+    String filePath = "/home/ervm/Documents/PTI/lab/ptiBASE/servlets/apache-tomcat-10.0.10/webapps/my_webapp/rentals.json";
     File file = new File(filePath);
 
-    if (!file.exists()) {
-      out.println("<p>No s'han trobat rentals.</p>");
+    if (!file.exists() || file.length() == 0) {
+      out.println("<p style='color: red;'>No s'han trobat rentals.</p>");
     } else {
       try (BufferedReader br = new BufferedReader(new FileReader(file))) {
         String line;

@@ -28,15 +28,16 @@ public class CarRentalNew extends HttpServlet {
     // Validar valors numerics obtinguts
     String errorMsg = validateFields(diesLloguer, numVehicles, descompte);
     if (!errorMsg.isEmpty()) {
-      out.println("<html><body>");
-      out.println("<h4>Error de validación:</h4>");
-      out.println("<p>" + errorMsg + "</p>");
+      out.println("<html><head><style>");
+      out.println(".error { color: red; }");
+      out.println("</style></head><body>");
+      out.println("<h4>Error de validación:</h4>"); 
+      out.println("<p class='error'>" + errorMsg + "</p>");
       out.println("<a href='carrental_form_new.html'>New rental</a><br>");
       out.println("<a href='carrental_home.html'>Home</a><br>");
       out.println("</body></html>");
       return;
-    }
-
+  }
     // Mapear el valor de CO2 (int -> string)
     co2Rating = mapCo2Rating(co2Rating);
 
@@ -90,7 +91,7 @@ public class CarRentalNew extends HttpServlet {
   }
   
   private void writeRentalToFile(JSONObject jsonObj) {
-    String filePath = "/home/alumne/Documents/PTI/lab/ptiBASE/servlets/apache-tomcat-10.0.10/webapps/my_webapp/rentals.json";
+    String filePath = "/home/ervm/Documents/PTI/lab/ptiBASE/servlets/apache-tomcat-10.0.10/webapps/my_webapp/rentals.json";
     File file = new File(filePath);
 
     if (!file.exists()) { // es crea arxiu si no existeix
