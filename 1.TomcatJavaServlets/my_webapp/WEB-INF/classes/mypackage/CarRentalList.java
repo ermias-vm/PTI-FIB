@@ -28,7 +28,7 @@ public class CarRentalList extends HttpServlet {
       out.println("<a href='carrental_home.html'>Home</a><br>");
       out.println("<h1>Rentals List:</h1>");
 
-      llegirIImprimirRentals(out);
+      llegirIImprimirRentals(out, getServletContext());
       out.println("</body></html>");
     } else {
       out.println("<a href='carrental_form_list.html'>List rentals</a><br><br>");
@@ -42,9 +42,13 @@ public class CarRentalList extends HttpServlet {
   }
 
   // Funció per llegir els rentals i imprimir-los
-  private void llegirIImprimirRentals(PrintWriter out) {
+  private void llegirIImprimirRentals(PrintWriter out, ServletContext context) {
     // Ruta del fitxer JSON on es registren els rentals
-    String filePath = "/home/ervm/Documents/PTI/lab/ptiBASE/servlets/apache-tomcat-10.0.10/webapps/my_webapp/rentals.json";
+    //String filePath = "/home/ervm/Documents/PTI/lab/ptiBASE/servlets/apache-tomcat-10.0.10/webapps/my_webapp/rentals.json";
+    
+    String appRootPath = context.getRealPath("/");
+    String filePath = appRootPath + "rentals.json";
+
     File file = new File(filePath);
 
     if (!file.exists() || file.length() == 0) {

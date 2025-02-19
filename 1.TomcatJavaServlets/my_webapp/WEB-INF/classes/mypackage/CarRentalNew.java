@@ -52,7 +52,7 @@ public class CarRentalNew extends HttpServlet {
     // Resposta a la peticio de lloguer
     printHtmlResponse(out, co2Rating, subModelVehicle, diesLloguer, numVehicles, descompte);
     //guardar les dades del lloguer al JSON
-    writeRentalToFile(jsonObj);
+    writeRentalToFile(jsonObj, getServletContext(), out);
   }
 
   private String validateFields(int diesLloguer, int numVehicles, double descompte) {
@@ -90,8 +90,11 @@ public class CarRentalNew extends HttpServlet {
     out.println("</body></html>");
   }
   
-  private void writeRentalToFile(JSONObject jsonObj) {
-    String filePath = "/home/ervm/Documents/PTI/lab/ptiBASE/servlets/apache-tomcat-10.0.10/webapps/my_webapp/rentals.json";
+  private void writeRentalToFile(JSONObject jsonObj, ServletContext context, PrintWriter out) {
+    //String filePath = "/home/ervm/Documents/PTI/lab/ptiBASE/servlets/apache-tomcat-10.0.10/webapps/my_webapp/rentals.json";
+    String appRootPath = context.getRealPath("/");
+    String filePath = appRootPath + "rentals.json";
+    
     File file = new File(filePath);
 
     if (!file.exists()) { // es crea arxiu si no existeix
