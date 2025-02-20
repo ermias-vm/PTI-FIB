@@ -1,0 +1,11 @@
+services:
+  carrental:
+    build:
+      context: .  # Directorio donde está el Dockerfile
+      dockerfile: Dockerfile  # Nombre del archivo Dockerfile
+    image: carrental  # Nombre de la imagen que se creará
+    container_name: carrental  # Nombre del contenedor
+    ports:
+      - "9080:8080"  # Mapea el puerto 8080 del host al puerto 8080 del contenedor
+      - "9443:8443"  # Mapea el puerto 8443 del host al puerto 8443 del contenedor
+    restart: always  # Reinicia el contenedor automáticamente si falla
