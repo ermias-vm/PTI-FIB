@@ -16,16 +16,18 @@ curl -X POST -H "Content-Type: application/json" -d '{"sender": "B","recipient":
 
 # Minar 3 bloques en el nodo 1
 curl http://localhost:5000/mine
-#curl http://localhost:5000/chain
+curl http://localhost:5000/chain
+
 curl http://localhost:5000/mine
-#curl http://localhost:5000/chain
+curl http://localhost:5000/chain
+
 curl http://localhost:5000/mine
-#curl http://localhost:5000/chain
+curl http://localhost:5000/chain
 
 # Minar 2 bloques en el nodo 2
 curl http://localhost:5001/mine
 curl http://localhost:5001/mine
-#curl http://localhost:5001/chain
+curl http://localhost:5001/chain
 
 # Registrar nodos entre sí
 curl -X POST -H "Content-Type: application/json" -d '{"nodes":"http://localhost:5001"}' http://localhost:5000/nodes/register
@@ -33,4 +35,4 @@ curl -X POST -H "Content-Type: application/json" -d '{"nodes":"http://localhost:
 
 # Sincronizar la blockchain entre los nodos
 curl http://localhost:5000/nodes/resolve
-curl http://localhost:5001/nodes/resolve
+curl http://localhost:5001/nodes/resolve  
