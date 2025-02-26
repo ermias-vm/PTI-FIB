@@ -13,7 +13,8 @@ class Blockchain:
         self.current_transactions = []
         self.chain = []
         self.nodes = set()
-
+        # Diccionario para almacenar los saldos de los usuarios
+        self.balances = {}
         # Create the genesis block
         self.new_block(previous_hash='1', proof=100)
 
@@ -119,28 +120,50 @@ class Blockchain:
 
         self.chain.append(block)
         return block
-
+    """
+    # Funció original  
     def new_transaction(self, sender, recipient, amount, order):
-        """
-        Creates a new transaction to go into the next mined Block
-
-        :param sender: Address of the Sender
-        :param recipient: Address of the Recipient
-        :param amount: Amount
-        :param order: Order number
-        :return: The index of the Block that will hold this transaction
-        """
-        
         transaction = {
             'sender': sender,
             'recipient': recipient,
             'amount': amount,
             'order': order,    
         }
-        
+        self.current_transactions.append(transaction)
+        return self.last_block['index'] + 1
+    """
+    
+    def new_transaction(self, sender, recipient, amount, order):
+        # Ignorar transacciones de recompensa minera (donde sender="0")
+        if sender != "0":
+            # Verificar si el remitente tiene suficiente saldo
+            if self.balances.get(sender, 0) < amount:
+                return 'Insufficient balance', 400  # Devolver error si no hay saldo suficiente
+            # Actualizar los saldos del remitente y destinatario
+            self.update_balances(sender, recipient, amount)
+
+        # Crear la transacción
+        transaction = {
+            'sender': sender,
+            'recipient': recipient,
+            'amount': amount,
+            'order': order,
+        }
+
+        # Agregar la transacción a la lista de transacciones pendientes
         self.current_transactions.append(transaction)
 
-        return self.last_block['index'] + 1
+        # Devolver el índice del próximo bloque donde se incluirá la transacción
+        return {'message': f'Transaction will be added to Block {self.last_block["index"] + 1}'}, 201
+
+    def update_balances(self, sender, recipient, amount):
+
+        if sender not in self.balances:
+            self.balances[sender] = 0
+        if recipient not in self.balances:
+            self.balances[recipient] = 0
+        self.balances[sender] -= amount
+        self.balances[recipient] += amount
 
     @property
     def last_block(self):
@@ -238,16 +261,20 @@ def mine():
 def new_transaction():
     values = request.get_json()
 
-    # Check that the required fields are in the POST'ed data
+    # Verificar que los campos requeridos estén presentes
     required = ['sender', 'recipient', 'amount', 'order']
     if not all(k in values for k in required):
         return 'Missing values', 400
 
-    # Create a new Transaction
-    index = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'], values['order'])
+    # Crear una nueva transacción
+    result = blockchain.new_transaction(values['sender'], values['recipient'], values['amount'], values['order'])
 
-    response = {'message': f'Transaction will be added to Block {index}'}
-    return jsonify(response), 201
+    # Manejar la respuesta
+    if isinstance(result, tuple):  # Si hay un error (saldo insuficiente)
+        message, status_code = result
+        return jsonify({'message': message}), status_code
+
+    return jsonify(result), 201
 
 
 @app.route('/chain', methods=['GET'])
@@ -343,8 +370,33 @@ def manipulate_chain():
         'chain': blockchain.chain
     }
     return jsonify(response), 200
+#####################  
 
-#####################
+        ## Funcions opcionals
+
+# Mostrem els saldos dels usuaris
+@app.route('/balances', methods=['GET'])
+def get_balances():
+    return jsonify(blockchain.balances), 200
+        
+@app.route('/balances/add', methods=['POST'])
+def add_balance():
+    values = request.get_json()
+    address = values.get('address')
+    amount = values.get('amount')
+
+    if not address or amount is None:
+        return "Error: Please provide both 'address' and 'amount'", 400
+
+    blockchain.balances[address] = blockchain.balances.get(address, 0) + amount
+    response = {
+        'message': 'Balance updated successfully',
+        'balances': blockchain.balances,
+    }
+    return jsonify(response), 200
+
+        ##
+
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
